@@ -3,7 +3,9 @@ import {
     EventEmitter,
     TreeDataProvider,
     TreeItem,
-    TreeItemCollapsibleState
+    TreeItemCollapsibleState,
+    Uri,
+    workspace
 } from 'vscode'
 
 import { Item } from './Item'
@@ -35,7 +37,7 @@ export class ItemsExplorer implements TreeDataProvider<Item> {
     }
 
     public getTreeItem(item: Item): TreeItem {
-        return {
+        let treeItem = {
             label: item.name + (item.state ? ' (' + item.state + ')' : ''),
             collapsibleState: item.isGroup ? TreeItemCollapsibleState.Collapsed : TreeItemCollapsibleState.None,
             command: item.isGroup ? void 0 : {
@@ -45,10 +47,19 @@ export class ItemsExplorer implements TreeDataProvider<Item> {
             },
             contextValue: this.getViewItem(item),
             iconPath: {
-                light: this.getIcon('light', item.type),
-                dark: this.getIcon('dark', item.type)
+                light: this.getTypeIcon('light', item.type),
+                dark: this.getTypeIcon('dark', item.type)
             }
         };
+
+        if (workspace.getConfiguration('openhab').customIcons && item.category !== 'none') {
+            treeItem.iconPath = {
+                light: this.getCustomIcon(item),
+                dark: this.getCustomIcon(item)
+            }
+        }
+
+        return treeItem;
     }
 
     /**
@@ -71,8 +82,21 @@ export class ItemsExplorer implements TreeDataProvider<Item> {
      * @param shade 'light' or 'dark' depending on the Color Theme
      * @param name icon's filename
      */
-    private getIcon(shade: string, name: string) {
+    private getTypeIcon(shade: string, name: string) {
         return path.join(__filename, '..', '..', '..', '..', 'resources', shade, name.toLowerCase() + '.svg')
+    }
+
+    private getCustomIcon(item: Item) {
+        // only HTTPS works here... :/
+        let icon = Uri.parse(this.openhabHost + item.icon)
+
+        // HACK: Monkey patch Uri.toString to avoid the unwanted query string encoding
+        const originalToStringFn = icon.toString;
+        icon.toString = function(skipEncoding?: boolean | undefined) {
+            return originalToStringFn.call(icon, true)
+        }
+
+        return icon
     }
 
     public getChildren(item?: Item): Item[] | Thenable<Item[]> {

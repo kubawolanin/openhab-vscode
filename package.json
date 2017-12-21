@@ -11,7 +11,7 @@
     },
     "license": "SEE LICENSE IN LICENSE",
     "engines": {
-        "vscode": "^1.15.0"
+        "vscode": "^1.19.0"
     },
     "categories": [
         "Languages",
@@ -261,6 +261,13 @@
                     ],
                     "default": false,
                     "description": "(optional) Makes 'Show in Paper UI' option open a target URL in external browser"
+                },
+                "openhab.customIcons": {
+                    "type": [
+                        "boolean"
+                    ],
+                    "default": false,
+                    "description": "(optional) Shows proper Item's icons"
                 }
             }
         },
@@ -343,7 +350,7 @@
         "request": "^2.83.0",
         "request-promise-native": "^1.0.5",
         "underscore.string": "^3.3.4",
-        "vscode": "^1.1.6",
+        "vscode": "1.1.10",
         "vscode-languageclient": "^3.5.0"
     }
 }

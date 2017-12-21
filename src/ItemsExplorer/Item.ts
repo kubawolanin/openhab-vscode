@@ -69,8 +69,7 @@ export class Item {
      */
     public get icon(): string {
         let icon = this.item.category || 'none'
-        return icon + '.svg'
-        // return '/icon/' + icon + '?format=svg'
+        return '/icon/' + icon + '?format=svg'
     }
 
     /**
